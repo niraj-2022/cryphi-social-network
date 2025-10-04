@@ -40,7 +40,10 @@ const userSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
-
+    currentSessionToken:{
+        type:String,
+        default:null
+    },
     friends: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: "User"

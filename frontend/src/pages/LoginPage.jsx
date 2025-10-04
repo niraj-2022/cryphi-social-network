@@ -10,6 +10,8 @@ const LoginPage = () => {
     password:"",
   });
 
+  const [submitAttempted, setSubmitAttempted] = useState(false);
+
   const queryClient = useQueryClient();
 
   const {mutate:loginMutation, isPending, error} = useMutation({
@@ -19,6 +21,7 @@ const LoginPage = () => {
 
   const handleLogin = (e) => {
     e.preventDefault();
+    setSubmitAttempted(true);
     loginMutation(loginData);
   }
   return (
@@ -37,9 +40,15 @@ const LoginPage = () => {
           </div>
           
           {/* Error Message */}
-          {error && (
+          {submitAttempted && error && (
             <div className="alert alert-error mb-4">
-              <span>{error.response.data.message}</span>
+              <span>
+                {error.message === "Already logged in on another device"
+                  ? "Already logged in on another device"
+                  : error.message === "Invalid Email or Password"
+                  ? "Invalid Email or Password"
+                  : error.message || "Login failed. Please try again."}
+              </span>
             </div>
           )}
 

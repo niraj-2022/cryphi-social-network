@@ -71,9 +71,17 @@ export async function login(req,res){
             return res.status(401).json({message: "Invalid Email or Password"});
         }
 
+        if (user.currentSessionToken){
+            return res.status(403).send("Already logged in on another device");
+        }
+
         const token = jwt.sign({userId: user._id}, process.env.JWt_SECRET_KEY, {
             expiresIn: "7d"
         });
+
+        user.currentSessionToken = token;
+        await user.save();
+
         res.cookie("jwt", token, {
             maxAge: 7*24*60*60*1000,
             httpOnly: true,
@@ -89,6 +97,8 @@ export async function login(req,res){
 
 export function logout(req,res){
     res.clearCookie("jwt");
+    User.findByIdAndUpdate(req.userId, { currentSessionToken: null })
+    .catch((err) => console.error("Error clearing session token:", err));
     res.status(200).json({success: true, message: "Successfully logged out!"});
 }
 
