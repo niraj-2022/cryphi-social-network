@@ -98,6 +98,7 @@ export async function login(req,res){
 export function logout(req,res){
     res.clearCookie("jwt");
     User.findByIdAndUpdate(req.userId, { currentSessionToken: null })
+    .exec()
     .catch((err) => console.error("Error clearing session token:", err));
     res.status(200).json({success: true, message: "Successfully logged out!"});
 }
