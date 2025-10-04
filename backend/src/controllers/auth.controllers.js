@@ -95,12 +95,17 @@ export async function login(req,res){
     }
 }
 
-export function logout(req,res){
-    res.clearCookie("jwt");
-    User.findByIdAndUpdate(req.userId, { currentSessionToken: null })
-    .exec()
-    .catch((err) => console.error("Error clearing session token:", err));
-    res.status(200).json({success: true, message: "Successfully logged out!"});
+export async function logout(req, res) {
+  // Clear JWT cookie
+  res.clearCookie("jwt");
+
+  // Clear currentSessionToken in DB
+  await User.findByIdAndUpdate(req.userId, { currentSessionToken: null }).catch(
+    (err) => console.error("Error clearing session token:", err)
+  );
+
+  // Respond
+  res.status(200).json({ success: true, message: "Successfully logged out!" });
 }
 
 export async function onboard(req, res) {
